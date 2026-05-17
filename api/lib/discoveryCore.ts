@@ -71,13 +71,17 @@ interface VenueTemplate {
 
 const VENUE_TEMPLATES = venuesData as unknown as VenueTemplate[];
 
-function matchVenueName(tmVenueName: string): VenueTemplate | null {
-  const normalized = tmVenueName??.toLowerCase() ?? "" ?? "".trim();
+function matchVenueName(tmVenueName: string | undefined | null): VenueTemplate | null {
+  if (!tmVenueName || typeof tmVenueName !== 'string') return null;
+  const normalized = tmVenueName.toLowerCase().trim();
+  if (!normalized) return null;
   let best: { template: VenueTemplate; matchLen: number } | null = null;
   
   for (const t of VENUE_TEMPLATES) {
     for (const pattern of t.match_patterns ?? []) {
-      const p = pattern??.toLowerCase() ?? "" ?? "".trim();
+      if (!pattern || typeof pattern !== 'string') continue;
+      const p = pattern.toLowerCase().trim();
+      if (!p) continue;
       if (normalized === p || normalized.includes(p) || p.includes(normalized)) {
         const matchLen = Math.min(p.length, normalized.length);
         if (!best || matchLen > best.matchLen) {
@@ -94,8 +98,8 @@ function matchVenueName(tmVenueName: string): VenueTemplate | null {
 // CATEGORY/TYPE MAPPING (TM Discovery → Base44 enum'lar)
 // ============================================================================
 
-function mapToBase44Category(tmSegment: string): GlanzEvent['category'] {
-  const s = tmSegment??.toLowerCase() ?? "" ?? "";
+function mapToBase44Category(tmSegment: string | undefined | null): GlanzEvent['category'] {
+  const s = (tmSegment ?? '').toLowerCase();
   if (s === 'sports') return 'sports';
   if (s === 'music') return 'music';
   if (s.includes('theatre') || s.includes('arts')) return 'theater';
@@ -103,9 +107,9 @@ function mapToBase44Category(tmSegment: string): GlanzEvent['category'] {
   return 'music'; // default fallback
 }
 
-function mapToBase44Type(tmSegment: string, hasMatchedFootballVenue: boolean): GlanzEvent['type'] {
+function mapToBase44Type(tmSegment: string | undefined | null, hasMatchedFootballVenue: boolean): GlanzEvent['type'] {
   if (hasMatchedFootballVenue) return 'match';
-  const s = tmSegment??.toLowerCase() ?? "" ?? "";
+  const s = (tmSegment ?? '').toLowerCase();
   if (s === 'sports') return 'match';
   if (s.includes('festival')) return 'festival';
   if (s === 'music') return 'concert';
@@ -130,6 +134,7 @@ function transformTMEvent(event: TMEvent): GlanzEvent | null {
   const venue = pickVenue(event);
   const artist = pickMainArtist(event);
   if (!venue || !event.dates?.start?.localDate) return null;
+  if (!event.name || !venue.name) return null; // null-safe: event/venue adı yoksa skip
 
   const dateIso = event.dates.start.dateTime ??
     `${event.dates.start.localDate}T${event.dates.start.localTime ?? '20:00:00'}`;
