@@ -1,15 +1,12 @@
 {
   "name": "glanz-seating-proxy",
-  "version": "1.0.0",
-  "description": "Seating info scraper for Glanz Light app",
+  "version": "2.0.0",
+  "description": "Multi-platform seating info proxy for Glanz Light (Eventim, Ticketmaster, ...)",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
-  },
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
     "@vercel/node": "^3.0.0",
