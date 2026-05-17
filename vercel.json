@@ -3,6 +3,27 @@
   "functions": {
     "api/seating.ts": {
       "maxDuration": 10
+    },
+    "api/cron/discover.ts": {
+      "maxDuration": 60
+    },
+    "api/discover/run.ts": {
+      "maxDuration": 60
+    },
+    "api/venues/[id].ts": {
+      "maxDuration": 5
+    },
+    "api/venues/index.ts": {
+      "maxDuration": 5
+    },
+    "api/venues/match.ts": {
+      "maxDuration": 5
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/discover",
+      "schedule": "0 6 * * *"
+    }
+  ]
 }
