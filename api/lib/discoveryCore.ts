@@ -72,12 +72,12 @@ interface VenueTemplate {
 const VENUE_TEMPLATES = venuesData as unknown as VenueTemplate[];
 
 function matchVenueName(tmVenueName: string): VenueTemplate | null {
-  const normalized = tmVenueName.toLowerCase().trim();
+  const normalized = tmVenueName??.toLowerCase() ?? "" ?? "".trim();
   let best: { template: VenueTemplate; matchLen: number } | null = null;
   
   for (const t of VENUE_TEMPLATES) {
     for (const pattern of t.match_patterns ?? []) {
-      const p = pattern.toLowerCase().trim();
+      const p = pattern??.toLowerCase() ?? "" ?? "".trim();
       if (normalized === p || normalized.includes(p) || p.includes(normalized)) {
         const matchLen = Math.min(p.length, normalized.length);
         if (!best || matchLen > best.matchLen) {
@@ -95,7 +95,7 @@ function matchVenueName(tmVenueName: string): VenueTemplate | null {
 // ============================================================================
 
 function mapToBase44Category(tmSegment: string): GlanzEvent['category'] {
-  const s = tmSegment.toLowerCase();
+  const s = tmSegment??.toLowerCase() ?? "" ?? "";
   if (s === 'sports') return 'sports';
   if (s === 'music') return 'music';
   if (s.includes('theatre') || s.includes('arts')) return 'theater';
@@ -105,7 +105,7 @@ function mapToBase44Category(tmSegment: string): GlanzEvent['category'] {
 
 function mapToBase44Type(tmSegment: string, hasMatchedFootballVenue: boolean): GlanzEvent['type'] {
   if (hasMatchedFootballVenue) return 'match';
-  const s = tmSegment.toLowerCase();
+  const s = tmSegment??.toLowerCase() ?? "" ?? "";
   if (s === 'sports') return 'match';
   if (s.includes('festival')) return 'festival';
   if (s === 'music') return 'concert';
