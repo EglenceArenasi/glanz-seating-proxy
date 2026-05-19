@@ -104,6 +104,13 @@ function mapToBase44Category(tmSegment: string): GlanzEvent['category'] {
 }
 
 function mapToBase44Type(tmSegment: string, hasMatchedFootballVenue: boolean): GlanzEvent['type'] {
+  const s = (tmSegment ?? '').toLowerCase();
+  // ÖNCE TM segment'ine bak - Bundesliga venue'da Music event'i 'match' olamaz!
+  if (s.includes('music')) return 'concert';
+  if (s.includes('arts') || s.includes('theatre') || s.includes('theater')) return 'other';
+  if (s.includes('comedy')) return 'other';
+  // Sports segment + Bundesliga venue match = futbol maçı
+  if (hasMatchedFootballVenue && s.includes('sports')) return 'match';
   if (hasMatchedFootballVenue) return 'match';
   const s = tmSegment.toLowerCase();
   if (s === 'sports') return 'match';
@@ -146,9 +153,11 @@ function transformTMEvent(event: TMEvent): GlanzEvent | null {
     ? `https://glanz-seating-proxy.vercel.app/api/venues/${matched.venue_id}`
     : undefined;
   
-  // artist_team: spor için takım adı, müzik için sanatçı
+  // artist_team: type=match için takım adı, type=concert için sanatçı
+  // ÖNEMLİ: sadece TYPE match değilse team_name atama (venue match yeterli değil)
+  const eventType = mapToBase44Type(segment, isFootballMatch);
   let artistTeam: string | undefined;
-  if (isFootballMatch && matched?.team_name) {
+  if (eventType === 'match' && matched?.team_name) {
     artistTeam = matched.team_name;
   } else if (artist?.name) {
     artistTeam = artist.name;
@@ -170,7 +179,7 @@ function transformTMEvent(event: TMEvent): GlanzEvent | null {
     capacity: matched?.capacity,
     attendee_count: 0,
     venue_map_url: venueMapUrl,
-    is_featured: isFootballMatch, // Bundesliga maçları başlangıçta featured!
+    is_featured: eventType === 'match', // Sadece gerçek maçlar featured
   };
 }
 
