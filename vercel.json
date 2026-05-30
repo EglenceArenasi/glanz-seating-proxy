@@ -18,6 +18,9 @@
     },
     "api/venues/match.ts": {
       "maxDuration": 5
+    },
+    "api/llm.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
