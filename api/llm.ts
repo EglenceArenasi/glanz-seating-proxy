@@ -32,9 +32,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       body: JSON.stringify({
         model,
-        max_tokens: 1500,
+        max_tokens: 900,
         // Web arama araci — Claude gercek/guncel bilgiye bakar, uydurmaz
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 1 }],
         messages: [{ role: 'user', content: prompt }],
       }),
     });
